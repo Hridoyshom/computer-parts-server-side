@@ -19,13 +19,14 @@ async function run() {
     try {
         await client.connect();
         const partsCollection = client.db('computer_parts').collection('parts')
+        const ordersCollection = client.db('computer_parts').collection('orders')
 
         app.get('/part', async (req, res) => {
             const query = {};
             const cursor = partsCollection.find(query);
             const parts = await cursor.toArray();
             res.send(parts);
-        })
+        });
         app.get('/single-part/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
@@ -36,6 +37,21 @@ async function run() {
             res.send(cursor);
 
 
+
+        });
+
+        app.get('/order', async (req, res) => {
+            const query = {};
+            const cursor = ordersCollection.find(query);
+            const orders = await cursor.toArray();
+            res.send(orders);
+        })
+
+        app.post('/order', async (req, res) => {
+            const order = req.body;
+
+            const result = await ordersCollection.insertOne(order);
+            res.send(result);
 
         })
     }
