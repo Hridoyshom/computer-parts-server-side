@@ -32,6 +32,18 @@ async function run() {
             res.send(parts);
         });
 
+        // app.put('/user/admin/:email', async (req, res) => {
+        //     const email = req.params.email;
+
+        //     const filter = { email: email };
+
+        //     const updateDoc = {
+        //         $set: { role: 'admin' },
+        //     };
+        //     const result = await userCollection.updateOne(filter, updateDoc);
+        //     res.send(result);
+        // });
+
         app.put('/user/:email', async (req, res) => {
             const email = req.params.email;
             const user = req.body;
@@ -59,13 +71,14 @@ async function run() {
         });
 
         app.get('/order', async (req, res) => {
-            const query = {};
+            const buyerEmail = req.query.buyerEmail;
+            const query = { buyerEmail: buyerEmail };
             const cursor = ordersCollection.find(query);
             const orders = await cursor.toArray();
             res.send(orders);
         })
 
-        app.get('/users', async (req, res) => {
+        app.get('/user', async (req, res) => {
             const users = await userCollection.find().toArray();
             res.send(users);
         })
