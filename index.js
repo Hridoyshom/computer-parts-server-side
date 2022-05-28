@@ -72,9 +72,11 @@ async function run() {
 
         app.get('/order', async (req, res) => {
             const buyerEmail = req.query.buyerEmail;
+            const authorization = req.headers.authorization;
+            console.log('auth header', authorization);
             const query = { buyerEmail: buyerEmail };
-            const cursor = ordersCollection.find(query);
-            const orders = await cursor.toArray();
+            const orders = await ordersCollection.find(query).toArray();
+
             res.send(orders);
         })
 
