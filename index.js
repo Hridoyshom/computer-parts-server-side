@@ -16,6 +16,13 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
+function verifyJWT(req, res) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return res.status(401).send({ message: 'UnAuthorized access' })
+    }
+}
+
 
 async function run() {
 
@@ -70,9 +77,9 @@ async function run() {
 
         });
 
-        app.get('/order', async (req, res) => {
+        app.get('/order', verifyJWT, async (req, res) => {
             const buyerEmail = req.query.buyerEmail;
-            const authorization = req.headers.authorization;
+            // const authorization = req.headers.authorization;
             console.log('auth header', authorization);
             const query = { buyerEmail: buyerEmail };
             const orders = await ordersCollection.find(query).toArray();
