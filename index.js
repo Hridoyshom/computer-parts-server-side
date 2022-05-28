@@ -37,6 +37,7 @@ async function run() {
     try {
         await client.connect();
         const partsCollection = client.db('computer_parts').collection('parts')
+        const reviewsCollection = client.db('computer_parts').collection('reviews')
         const ordersCollection = client.db('computer_parts').collection('orders')
         const userCollection = client.db('computer_parts').collection('users')
 
@@ -46,6 +47,21 @@ async function run() {
             const parts = await cursor.toArray();
             res.send(parts);
         });
+
+        app.get('/reviews', async (req, res) => {
+            const query = {};
+            const cursor = reviewsCollection.find(query);
+            const reviews = await cursor.toArray();
+            res.send(reviews);
+        });
+        app.post('/reviews', async (req, res) => {
+            const review = req.body;
+
+            const result = await reviewsCollection.insertOne(review);
+            res.send(result);
+
+        })
+
 
         app.put('/user/admin/:email', verifyJWT, async (req, res) => {
             const email = req.params.email;
@@ -111,6 +127,13 @@ async function run() {
         app.get('/user', async (req, res) => {
             const users = await userCollection.find().toArray();
             res.send(users);
+        })
+
+        app.get('/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = await userCollection.findOne({ email: email });
+            const isAdmin = user.role === 'admin';
+            res.send({ admin: isAdmin })
         })
 
         app.post('/order', async (req, res) => {
